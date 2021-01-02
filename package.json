@@ -1,6 +1,6 @@
 {
   "name": "@performance-artist/async-joyride",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React-joyride wrapper adapted for eventually available(e.g. loading) components",
   "keywords": [
     "react",
