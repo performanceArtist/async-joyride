@@ -16,11 +16,11 @@ export type TourState<T extends TourStepKey> = {
 };
 
 const makeInitialState = <T extends TourStepKey>(
-  steps: NonEmptyArray<T>,
+  stepKeys: NonEmptyArray<T>,
 ): TourState<T> => ({
   currentStep: {
     index: 0,
-    key: steps[0],
+    key: stepKeys[0],
   },
   isOpen: false,
 });
@@ -35,12 +35,14 @@ export type TourSource<T extends TourStepKey> = SourceOf<
   }
 >;
 
+export const DEFAULT_ID = 'tour';
+
 export const makeTourSource = <T extends TourStepKey>(
-  steps: NonEmptyArray<T>,
-) => (): TourSource<T> => {
+  stepKeys: NonEmptyArray<T>,
+) => (id = DEFAULT_ID): TourSource<T> => {
   const setCurrentStep = (state: TourState<T>) => (currentStep: T) =>
     pipe(
-      steps,
+      stepKeys,
       array.findIndex(step => step === currentStep),
       option.fold(
         () => state,
@@ -50,14 +52,14 @@ export const makeTourSource = <T extends TourStepKey>(
 
   const setCurrentStepIndex = (state: TourState<T>) => (index: number) =>
     pipe(
-      steps,
+      stepKeys,
       array.lookup(index),
       option.fold(() => state, setCurrentStep(state)),
     );
 
   return source.create(
-    'tour',
-    makeInitialState(steps),
+    id,
+    makeInitialState(stepKeys),
   )({
     setTourOpen: source.input(),
     onStepReady: source.input(),
