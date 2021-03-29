@@ -18,13 +18,13 @@ describe('tour', () => {
         const { tourSource } = deps;
 
         tourSource.dispatch('setTourOpen')(true);
-        expect(history.take()).toStrictEqual([output('isOpen$')(false)]);
+        expect(history.take()).toStrictEqual([output('isOpen')(false)]);
 
         tourSource.dispatch('onStepReady')('one');
         expect(
           test.unorderedEqualStrict(history.take(), [
-            output('onStepReady$')('one'),
-            output('isOpen$')(true),
+            output('onStepReady')('one'),
+            output('isOpen')(true),
           ]),
         ).toBe(true);
       },

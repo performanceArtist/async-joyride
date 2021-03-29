@@ -1,4 +1,4 @@
-import { medium, ray } from '@performance-artist/medium';
+import { medium, effect } from '@performance-artist/medium';
 import { behavior } from '@performance-artist/rx-utils';
 import { set } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/pipeable';
@@ -23,7 +23,7 @@ export const makeTourMedium = <T extends TourStepKey>() =>
       rxo.distinctUntilChanged(),
     );
 
-    const isOpen$ = pipe(
+    const isOpen = pipe(
       rx.combineLatest([
         on(tourSource.create('setTourOpen')),
         stepReady.value$,
@@ -33,18 +33,20 @@ export const makeTourMedium = <T extends TourStepKey>() =>
         ([isTourOpen, stepReady, currentStep]) =>
           isTourOpen && stepReady.has(currentStep.key),
       ),
-      ray.infer(isOpen =>
+      effect.tag('isOpen', isOpen =>
         tourSource.state.modify(state => ({ ...state, isOpen })),
       ),
     );
 
-    const onStepReady$ = pipe(
+    const onStepReady = pipe(
       on(tourSource.create('onStepReady')),
-      ray.infer(step => stepReady.modify(stepReady => stepReady.add(step))),
+      effect.tag('onStepReady', step =>
+        stepReady.modify(stepReady => stepReady.add(step)),
+      ),
     );
 
     return {
-      isOpen$,
-      onStepReady$,
+      isOpen,
+      onStepReady,
     };
   });
